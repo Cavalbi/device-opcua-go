@@ -1,0 +1,9 @@
+[[DeviceList]]
+  Name = "OPCServerSimulated"
+  ProfileName = "OPCServerSimulated"
+  Description = "Simulation of an OPC server"
+  Labels = [ "test" ]
+  [DeviceList.Protocols]
+    [DeviceList.Protocols.opcua]
+      Endpoint = "opc.tcp://localhost:4841/freeopcua/server/"
+  

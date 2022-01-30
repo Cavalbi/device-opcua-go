@@ -1,0 +1,40 @@
+apiVersion: "v2"
+name: "OPCServerSimulated"
+manufacturer: "Unibo"
+labels:
+  - "test"
+description: "Simulation of an OPC server"
+
+deviceResources:
+  -
+    name: "MyInt"
+    isHidden: false
+    description: "Integer variable"
+    properties:
+        valueType: "Int32"
+        readWrite: "R"
+    attributes:
+      { nodeId: "ns=2;i=2" }
+  -
+    name: "MyFloat"
+    isHidden: false
+    description: "Float variable"
+    properties:
+        valueType: "Int32"
+        readWrite: "R"
+    attributes:
+      { nodeId: "ns=2;i=3" }
+
+deviceCommands:
+  -
+    name: "myintcommand"
+    isHidden: false
+    readWrite: "R"
+    resourceOperations:
+      - { deviceResource: "MyInt", defaultValue: "false" }
+  -
+    name: "myfloatcommand"
+    isHidden: false
+    readWrite: "R"
+    resourceOperations:
+      - { deviceResource: "MyFloat", defaultValue: "false" }
