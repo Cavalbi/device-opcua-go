@@ -2,10 +2,6 @@
 
 This is an implementation of an OPC-UA based Device Service for the open-source edge platform [EdgeX Foundry](https://github.com/edgexfoundry). It allows you to register a new Device Service and make read and write operations on a real connected device using the library [Go Opcua](https://github.com/gopcua/opcua). It is based on [SDK-GO library](https://github.com/edgexfoundry/device-sdk-go) for Jakarta release and the version 2.O of the REST APIs.
 
-## Protocol Driver
-
-To make a functional Device Service, developers must implement the [ProtocolDriver](../pkg/models/protocoldriver.go) interface. 
-`ProtocolDriver` interface provides abstraction logic of how to interact with Device through specific protocol. See [simpledriver.go](driver/simpledriver.go) for example.
 
 ## Protocol Discovery
 
