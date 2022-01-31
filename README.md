@@ -3,6 +3,7 @@
 This is an implementation of an OPC-UA based Device Service for the open-source edge platform [EdgeX Foundry](https://github.com/edgexfoundry). It allows you to register a new Device Service and make read and write operations on a real connected device using the library [Go Opcua](https://github.com/gopcua/opcua). It is based on [SDK-GO library](https://github.com/edgexfoundry/device-sdk-go) for Jakarta release and the version 2.O of the REST APIs.
 
 
+
 ## Protocol Discovery
 
 Some device protocols allow for devices to be discovered automatically.
