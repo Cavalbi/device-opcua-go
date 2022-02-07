@@ -19,7 +19,7 @@ This is an implementation of an OPC-UA based Device Service for the open-source 
 Device Services can be configured trough multiple yaml files that define the environment in which they are going to be deployed. Mainly they can configure two things: the device to which we are going to connect and the values to be read along with the commands that can be performed.
 
 ## Device Configuration
-Inside [opc-simulated-device.toml](https://github.com/Cavalbi/device-opcua-go/blob/master/cmd/res/devices/opc-simulated-device.toml) you can configure the device to which you are going to connect. The name of the device can be set as well as the progile that is going to be used and the actual endpoint to which make the connection
+Inside [opc-simulated-device.toml](https://github.com/Cavalbi/device-opcua-go/blob/master/cmd/res/devices/opc-simulated-device.toml) you can configure the device to which you are going to connect. The name of the device can be set as well as the profile that is going to be used and the actual endpoint to which make the connection
 
 ```toml
 
