@@ -18,15 +18,7 @@ StartupMsg = "OPC device started"
 # MaxRequestSize limit the request body size in byte of put command
 MaxRequestSize = 0 # value 0 unlimit the request size.
 RequestTimeout = "20s"
-  # [Service.CORSConfiguration]
-  # EnableCORS = false
-  # CORSAllowCredentials = false
-  # CORSAllowedOrigin = "https://localhost"
-  # CORSAllowedMethods = "GET, POST, PUT, PATCH, DELETE"
-  # CORSAllowedHeaders = "Authorization, Accept, Accept-Language, Content-Language, Content-Type, X-Correlation-ID"
-  # CORSExposeHeaders = "Cache-Control, Content-Language, Content-Length, Content-Type, Expires, Last-Modified, Pragma, X-Correlation-ID"
-  # CORSMaxAge = 3600
-
+ 
 [Registry]
 Host = "localhost"
 Port = 8500
@@ -67,24 +59,6 @@ PublishTopicPrefix = "edgex/events/device" # /<device-profile-name>/<device-name
   AutoReconnect = "true"
   ConnectTimeout = "5" # Seconds
   SkipCertVerify = "false" # Only used if Cert/Key file or Cert/Key PEMblock are specified
-
-# Example SecretStore configuration.
-# Only used when EDGEX_SECURITY_SECRET_STORE=true
-# Must also add `ADD_SECRETSTORE_TOKENS: "device-simple"` to vault-worker environment so it generates
-# the token and secret store in vault for "device-simple"
-# [SecretStore]
-# Type = "vault"
-# Host = "localhost"
-# Port = 8200
-# Path = "device-simple/"
-# Protocol = "http"
-# RootCaCertPath = ""
-# ServerName = ""
-# SecretsFile = ""
-# DisableScrubSecretsFile = false
-# TokenFile = "/tmp/edgex/secrets/device-simple/secrets-token.json"
-#   [SecretStore.Authentication]
-#   AuthType = "X-Vault-Token"
 
 [Device]
   DataTransform = true

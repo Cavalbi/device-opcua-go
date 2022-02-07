@@ -3,36 +3,107 @@
 This is an implementation of an OPC-UA based Device Service for the open-source edge platform [EdgeX Foundry](https://github.com/edgexfoundry). It allows you to register a new Device Service and make read and write operations on a real connected device using the library [Go Opcua](https://github.com/gopcua/opcua). It is based on [SDK-GO library](https://github.com/edgexfoundry/device-sdk-go) for Jakarta release and the version 2.O of the REST APIs.
 
 
+## Prerequistes
+- Having an Edgex-go deployment running with at least core data, core metadata and core data
+- Having an OPC-UA Server to test
 
-## Protocol Discovery
 
-Some device protocols allow for devices to be discovered automatically.
-A Device Service may include a capability for discovering devices and creating the corresponding Device objects within EdgeX.  
+## Features
 
-To enable device discovery, developers need to implement the [ProtocolDiscovery](../pkg/models/protocoldiscovery.go) interface.
-The `ProtocolDiscovery` interface defines a single `Discover` method which is used to trigger protocol-specific device discovery.
-Any devices found as a result of discovery being triggered are returned to the SDK via a go channel, passed to the implementation as a parameter during Initialization.
-New discovery attempts may be started as soon as a slice of devices is submitted, so in oreder to avoid the service being congested by concurrent discovery.
-  
-The SDK will then filter these devices against pre-defined acceptance criteria (i.e. Provision Watchers), and add any devices which match (excluding existing devices).
+- Execute a read command for one or multiple variables
+- Execute a write command for one or multiple variables
+- Subscribe and monitor one or multiple variables
 
-A Provision Watcher contains the following fields:
+# Configuration
 
-`Identifiers`: A set of name-value pairs against which a new device's ProtocolProperties are matched  
-`BlockingIdentifiers`: An additional set of name-value pairs which if matched, will block the addition of a newly discovered device  
-`ProfileName`: The name of a DeviceProfile which should be assigned to new devices which meet the given criteria  
-`ServiceName`: The name of a DeviceService which the ProvisionWatcher should be applied on  
-`AdminState`: The initial Administrative State for new devices which meet the given criteria  
-`AutoEvents`: A list of AutoEvent associated with the newly discovered device 
- 
-A candidate new device passes a ProvisionWatcher if all the Identifiers match, and none of the Blocking Identifiers match.
-For devices with multiple `Device.Protocol`, each `Device.Protocol` is considered separately. A match on any of the protocols results in the device being added.
+Device Services can be configured trough multiple yaml files that define the environment in which they are going to be deployed. Mainly they can configure two things: the device to which we are going to connect and the values to be read along with the commands that can be performed.
 
-Finally, A boolean configuration value `Device/Discovery/Enabled` defaults to false. If it is set true, and the DS implementation supports discovery, discovery is enabled.
-Dynamic Device Discovery is triggered either by internal timer(see `Device/Discovery/Interval` in [configuration.toml](cmd/device-simple/res/configuration.toml)) or by a call to the device service's `/discovery` REST endpoint.
+## Device Configuration
+Inside [opc-simulated-device.toml](https://github.com/Cavalbi/device-opcua-go/blob/master/cmd/res/devices/opc-simulated-device.toml) you can configure the device to which you are going to connect. The name of the device can be set as well as the progile that is going to be used and the actual endpoint to which make the connection
 
-The following steps show how to trigger discovery on device-simple:
-1. Set `Device/Discovery/Enabled` to true in [configuration file](cmd/device-simple/res/configuration.toml)
-2. Post the [provided provisionwatcher](cmd/device-simple/res/provisionwatcher.json) into core-metadata endpoint: http://edgex-core-metadata:59881/api/v2/provisionwatcher
-3. Trigger discovery by sending POST request to DS endpoint: http://edgex-device-simple:59999/api/v2/discovery
-4. `Simple-Device02` will be discovered and added to EdgeX.
+```toml
+
+[[DeviceList]]
+  Name = "OPCServerSimulated"
+  ProfileName = "OPCServerSimulated"
+  Description = "Simulation of an OPC server"
+  Labels = [ "test" ]
+  [DeviceList.Protocols]
+    [DeviceList.Protocols.opcua]
+      Endpoint = "opc.tcp://localhost:4841/freeopcua/server/"
+
+```
+
+This is enough to ensure an anonymous connection to the server. If we want to set up a more specific type of connection with security enabled we can go to [configuration.toml](https://github.com/Cavalbi/device-opcua-go/blob/master/cmd/res/configuration.toml) and change the configuration specific for OPC-UA such as policy, mode and path to certificates.
+
+```toml
+
+[OPCCustom]
+DeviceName = "OPCServerSimulated"   # Name of existing Device
+Policy = "None"                   # Security policy: None, Basic128Rsa15, Basic256, Basic256Sha256. Default: None
+Mode = "None"                     # Security mode: None, Sign, SignAndEncrypt. Default: None
+CertFile = ""                     # Path to cert.pem. Required for security mode/policy != None
+KeyFile = ""                      # Path to private key.pem. Required for security mode/policy != None
+  [OPCCustom.Writable]
+  Resources = "myInt,myFloat"   # list of nodes on the server to read
+
+```
+
+## Device Profile Configuration
+[Device Profile](https://github.com/Cavalbi/device-opcua-go/blob/master/cmd/res/profiles/opc-simulated-driver.yaml) let you define the type of values that you can read from OPC-UA server and the actions that you can perform on them.
+
+```yaml
+deviceResources:
+  -
+    name: "MyInt"
+    isHidden: false
+    description: "Integer variable"
+    properties:
+        valueType: "Int32"
+        readWrite: "R"
+    attributes:
+      { nodeId: "ns=2;i=2" }
+```
+Device Resource is a variable that can be read from the server, here we can configure:
+
+- Name: Name of the variable
+- isHidden: property that says if the variable is exposed to receive commands (Default:false)
+- Description: description of the variable
+- valueType: type of variable
+- readWrite: type of operations that can be perfomed on it
+- attributes: general key/value attributes that can be associated to it (e.g. the variable address)
+
+```yaml
+deviceCommands:
+  -
+    name: "myintcommand"
+    isHidden: false
+    readWrite: "R"
+    resourceOperations:
+      - { deviceResource: "MyInt", defaultValue: "false" }
+```
+
+Device command is a command that can be perfomed on the device, here we can configure:
+
+- Name: Name of the command that need to be added to the URI endpoint (e.g. http://localhost:59999/api/v2 + "myintcommand")
+- isHidden: property that says if the command is exposed (Default:false)
+- readWrite: type of operations that can be perfomed on the resourced defined
+- resourceOperations: list of device resources that can be read or written
+
+# Build and Run
+To build and run the application a Makefile is used.
+
+```bash
+make build
+```
+Build the application
+
+```bash
+make run
+```
+Run the application in nonsecure mode
+
+```bash
+make docker
+```
+Creates a docker image 
