@@ -4,7 +4,7 @@ This is an implementation of an OPC-UA based Device Service for the open-source 
 
 
 ## Prerequistes
-- Having an Edgex-go deployment running with at least core data, core metadata and core data
+- Having an Edgex-go deployment running with at least core data, core metadata and core command
 - Having an OPC-UA Server to test
 
 
